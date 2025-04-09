@@ -82,25 +82,41 @@ Esse é exatamente o papel do padrão Mediator em projetos de software: centrali
 
 ```plantuml
 @startuml
-interface Aeronave {
-    + receberMensagem(String mensagem)
-    + enviarMensagem(String mensagem)
+skinparam classAttributeIconSize 0
+
+' Interfaces
+interface TorreDeControle {
+    +distribuirMensagem(mensagem: String, origem: Aeronave): void
 }
 
-class Aviao
-
-interface TorreControle {
-    + registrarAeronave(Aeronave aeronave)
-    + distribuirMensagem(String mensagem, Aeronave origem)
+interface Areonave {
+    +receberMensagem(mensagem: String): void
+    +enviarMensagem(mensagem: String): void
 }
 
-class TorreDeControleConcreta
+' Implementações concretas
+class TorreDeControleConcreta {
+    -aeronaves: List<Aeronave>
+    +registrarAeronave(aeronave: Aeronave): void
+    +distribuirMensagem(mensagem: String, origem: Aeronave): void
+}
 
-TorreControle <|.. TorreDeControleConcreta
-Aeronave <|.. Aviao
+class Aviao {
+    -nome: String
+    -torre: Mediator
+    +Aviao(nome: String, torre: Mediator)
+    +receberMensagem(mensagem: String): void
+    +enviarMensagem(mensagem: String): void
+}
 
-TorreDeControleConcreta o-- Aeronave
-Aviao --> TorreDeControleConcreta : enviarMensagem
+' Heranças
+TorreDeControleConcreta ..|> TorreDeControle
+Aviao ..|> Areonave
+
+' Relacionamentos
+TorreDeControle <.. Areonave : <<mediator>>
+TorreDeControleConcreta --> Aviao : envia para
+Aviao --> TorreDeControleConcreta : referencia
 @enduml
 ```
 
